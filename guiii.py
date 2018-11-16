@@ -13,6 +13,7 @@ class Go(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
 
+        self.iconbitmap("@index.xbm")
         self.resizable(0,0)
         self.title("Menu")
 
@@ -35,17 +36,21 @@ class StartPage(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
 
-        label = tk.Label(self, text="Καλημέρα σας", font=('TimesNewRoman','20', 'bold', 'italic'))
-        label.pack(side="top", fill="x", pady=10)
-        ##Buttons
+        temp = ImageTk.PhotoImage( Image.open("kinder.jpg") ) 
+        self.label = tk.Label(self, image = temp, text="Καλημέρα σας", font=('TimesNewRoman','30', 'italic'), compound = TOP,
+                              bg = 'white')
+        self.label.image = temp
+        self.label.pack(side="top", fill=BOTH)
+        
+        ##Button
         self.button1 = Button(self, text="Google TTS", command=lambda: lock("Lock Screen"))
         self.button1.config(height = 30, width = 60)
         self.button1.pack(side = LEFT)
         
-        self.button2 = Button(self, text="Return to start page", 
+        self.button2 = Button(self, text="Speaking Game", 
                   command=lambda: master.switch_frame(PageOne))
         self.button2.config(height = 30, width = 60)
-        self.button2.pack(side = LEFT)
+        self.button2.pack(side = RIGHT)
         
 
 class PageOne(tk.Frame):
