@@ -4,9 +4,11 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import speech_recognition as sr
 sr.__version__
-from fruits import *
+from category import *
 
-
+r = sr.Recognizer()
+r.energy_threshold = 2000
+r.pause_threshold = 2
 
 class Go(tk.Tk):
     def __init__(self):
@@ -14,6 +16,7 @@ class Go(tk.Tk):
 
         self.iconbitmap("@index.xbm")
         self.resizable(0,0)
+        self.geometry("600x440")
         self.title("Menu")
 
         self._frame = None
@@ -45,7 +48,7 @@ class StartPage(tk.Frame):
         img2 = ImageTk.PhotoImage( Image.open("kinder3.jpg") ) 
         self.button1 = Button(self, image = img2, command=lambda: lock("Lock Screen"), bg='white', compound = LEFT)
         self.button1.image = img2
-        self.button1.pack(side = LEFT, ipadx = 60)
+        self.button1.pack(side = LEFT, ipadx = 30)
 
         img3 = ImageTk.PhotoImage( Image.open("kinder4.jpg") ) 
         self.button2 = Button(self, image = img3, command=lambda: master.switch_frame(PageOne), bg='white', compound = LEFT)
@@ -58,22 +61,22 @@ class PageOne(tk.Frame):
         tk.Frame.__init__(self, master)
 
         temp = ImageTk.PhotoImage( Image.open("kinder2.jpg") ) 
-        self.label = tk.Label(self, image = temp, text="   Έτοιμοι να ξεκινήσουμε;   ", font=('TimesNewRoman','30', 'italic'), compound = RIGHT,
+        self.label = tk.Label(self, image = temp, text="   Έτοιμοι να ξεκινήσουμε;   ", font=('TimesNewRoman','20', 'bold','italic'), compound = RIGHT,
                               bg = 'white')
         self.label.image = temp
         self.label.pack(side="top", fill=BOTH)
         
         ##Buttons
         self.button1 = Button(self, command=lambda: master.switch_frame(StartPage), bg = 'indian red', text = "Όχι", font=('TimesNewRoman','30', 'italic'))
-        self.button1.config( height = 8, width = 24)
+        self.button1.config( height = 8, width = 14)
         self.button1.pack(side = LEFT)
         
         self.button2 = Button(self, bg = 'pale green', text = "Ναι", font=('TimesNewRoman','30', 'italic'),
-                  command=lambda: master.switch_frame(CategoryPage))
-        self.button2.config(height = 8, width = 24)
+                  command=lambda: master.switch_frame(ReadyPage))
+        self.button2.config(height = 8, width = 14)
         self.button2.pack(side = RIGHT)
 
-class CategoryPage(tk.Frame):
+class ReadyPage(tk.Frame):
 
     def __init__(self, master):
         tk.Frame.__init__(self, master)
@@ -84,20 +87,17 @@ class CategoryPage(tk.Frame):
         
         self.label.pack(side="top", fill=BOTH)
 
-        self.button1 = Button(self, text = category_string, command=lambda: master.switch_frame(GamePage), bg = category_color, font=('TimesNewRoman','30', 'italic'))
-        self.button1.config( height = 8, width = 48)
+        self.button1 = Button(self, text = category_string, command=lambda: master.switch_frame(GamePage), bg = category_color, font=('TimesNewRoman','15', 'italic'))
+        self.button1.config( height = 8, width = 24)
         self.button1.pack(side = RIGHT, expand = 1, fill=BOTH)
         
-        self.button1 = Button(self, text="Πίσω", command=lambda: master.switch_frame(PageOne), bg = 'white')
-        self.button1.config( height = 8, width = 8)
+        self.button1 = Button(self, text="Πίσω", command=lambda: master.switch_frame(PageOne), bg = 'white',font=('TimesNewRoman','15', 'italic'))
+        self.button1.config( height = 8, width = 4)
         self.button1.pack(side = LEFT, fill = BOTH)
 
-def func(index):
-    r = sr.Recognizer()
-    r.energy_threshold = 2000
-    r.pause_threshold = 2
-    print(category[index])
 
+def func(index):
+    
     with sr.Microphone() as source:
         print('Say Something')
         audio = r.listen(source)
@@ -112,7 +112,7 @@ def func(index):
             print('Try Again\n')
 
     except Exception as e:
-        print(e)
+        print("problem")
 
     return
 
@@ -124,27 +124,28 @@ class GamePage(tk.Frame):
         self.counter = 0
         temp = ImageTk.PhotoImage( Image.open( category_images[ self.counter ] ) )
         
-        self.label = tk.Label(self, text = category[ self.counter ], font=('TimesNewRoman','20', 'bold', 'italic'), image =  temp)
+        self.label = tk.Label(self, text = category[ self.counter ], font=('TimesNewRoman','14', 'bold', 'italic'), image =  temp, compound = TOP, bg='white')
         self.label.pack(side="top", fill="x", pady=10)
         self.label.image = temp
         self.after(1000, self.refresh)
 
     def refresh(self):
 
+        func(self.counter)
         self.counter += 1
         if(self.counter < length):
 
             temp = ImageTk.PhotoImage( Image.open( category_images[ self.counter ] ) )
             
             self.label.config( image = temp )
+            self.label.config( text = category[ self.counter ] )
+            
             self.label.image = temp
-
-            func(self.counter)
             
             self.after(1000, self.refresh)
             
         else:
-            self.master.switch_frame(CategoryPage)
+            self.master.switch_frame(ReadyPage)
 
             
 if __name__ == "__main__":
